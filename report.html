@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>타이타닉 생존률 분석 보고서</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255,255,255,0.06);
+      --card-2: rgba(255,255,255,0.09);
+      --line: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --accent: #6ee7ff;
+      --accent-2: #a78bfa;
+      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --max: 1020px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 10% 0%, rgba(110,231,255,0.18), transparent 55%),
+        radial-gradient(1100px 700px at 90% 10%, rgba(167,139,250,0.16), transparent 55%),
+        linear-gradient(180deg, #070a14 0%, var(--bg) 55%, #070a14 100%);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 18px 72px;
+    }
+
+    header.hero {
+      position: relative;
+      padding: 28px 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        radial-gradient(900px 380px at 20% 0%, rgba(110,231,255,0.20), transparent 60%),
+        radial-gradient(700px 340px at 80% 10%, rgba(167,139,250,0.18), transparent 58%);
+      pointer-events: none;
+      filter: blur(6px);
+    }
+
+    .hero > * { position: relative; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(110,231,255,0.12);
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: -0.4px;
+      line-height: 1.15;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 70ch;
+    }
+
+    .meta {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav.toc {
+      margin-top: 18px;
+      padding: 14px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .toc-title {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.03);
+      text-decoration: none;
+      color: var(--text);
+      transition: 140ms ease;
+      font-size: 14px;
+    }
+    .toc a:hover {
+      border-color: rgba(110,231,255,0.35);
+      background: rgba(110,231,255,0.08);
+      transform: translateY(-1px);
+    }
+
+    main { margin-top: 18px; }
+
+    section.card {
+      margin-top: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 18px 20px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.2px;
+    }
+
+    .badge {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.14);
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .card-body { padding: 16px 20px 20px; }
+
+    .lead {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 14.5px;
+      max-width: 80ch;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .note {
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(110,231,255,0.20);
+      background: rgba(110,231,255,0.07);
+      color: rgba(255,255,255,0.86);
+      font-size: 14px;
+    }
+
+    .note strong { color: #d7f8ff; }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
+    }
+
+    thead th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      color: rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.06);
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    tbody td {
+      padding: 10px 12px;
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.84);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    .small {
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 10px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    figure {
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+    }
+
+    figure img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+    }
+
+    figcaption {
+      padding: 10px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12.5px;
+      text-align: center;
+    }
+
+    .hr {
+      height: 1px;
+      background: rgba(255,255,255,0.10);
+      margin: 14px 0;
+      border: 0;
+    }
+
+    @media (max-width: 860px) {
+      .toc-grid { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: 1fr; }
+      header.hero { padding: 22px 16px; }
+      .card-body { padding: 14px 14px 18px; }
+      .card-head { padding: 16px 14px 10px; }
+    }
+
+    @media print {
+      body { background: white; color: #111; }
+      header.hero, section.card { box-shadow: none; }
+      :root { --line: rgba(0,0,0,0.12); }
+      .kicker, .pill, .badge { background: transparent; }
+      .toc a { background: transparent; }
+      table { background: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="kicker"><span class="dot"></span> 데이터 분석 보고서</div>
+      <h1>타이타닉 생존률 분석 보고서</h1>
+      <p class="sub">
+        타이타닉호 승객 데이터를 바탕으로 생존과 관련된 조건(성별, 객실 등급, 나이, 요금 등)을 탐색적으로 살펴본 결과를 정리했다.
+        이 보고서는 EDA(탐색적 데이터 분석) 단계이며, 특정 요인이 생존의 ‘원인’이라고 단정하지 않는다.
+      </p>
+      <div class="meta">
+        <span class="pill">등록일자: 2026.01</span>
+        <span class="pill">관측치: 418명</span>
+        <span class="pill">형식: 표 중심 요약</span>
+      </div>
+
+      <nav class="toc" aria-label="목차">
+        <p class="toc-title">목차</p>
+        <div class="toc-grid">
+          <a href="#s1">1. 분석 목적 & 배경</a>
+          <a href="#s2">2. 활용 데이터</a>
+          <a href="#s3">3. 분석 과정</a>
+          <a href="#s4">4. 분석 결과</a>
+          <a href="#s5">5. 한계점 및 결론</a>
+          <a href="#viz">시각화 자료</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section id="s1" class="card">
+        <div class="card-head">
+          <h2>1. 분석 목적 & 배경</h2>
+          <span class="badge">목표</span>
+        </div>
+        <div class="card-body">
+          <p class="lead">
+            타이타닉호 침몰 사고는 많은 인명 피해가 발생한 대표적인 해양 재난이다. 본 분석은 타이타닉호에 탑승했던 승객들의 데이터를 활용하여,
+            <strong>어떤 조건과 특징이 생존에 도움이 되었는지</strong>를 알아보고자 진행되었다.
+          </p>
+          <div class="note">
+            <strong>핵심 질문</strong>: 성별, 객실 등급, 나이, 요금, 가족 동반 여부 등은 생존 여부와 어떤 관련이 있을까?
+          </div>
+        </div>
+      </section>
+
+      <section id="s2" class="card">
+        <div class="card-head">
+          <h2>2. 활용 데이터</h2>
+          <span class="badge">데이터 설명</span>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div>
+              <p class="lead">2.1 데이터 개요</p>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>내용</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>데이터명</td><td>Titanic 승객 데이터</td></tr>
+                  <tr><td>관측치 수</td><td>418명</td></tr>
+                  <tr><td>분석 단위</td><td>승객 1명</td></tr>
+                  <tr><td>주요 목적</td><td>생존 여부와 관련 요인 탐색</td></tr>
+                </tbody>
+              </table>
+              <p class="small">※ 전처리 완료본(titanic_preprocessed.xlsx)을 기준으로 한다.</p>
+            </div>
+            <div>
+              <p class="lead">2.3 데이터 전처리</p>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>처리 방법</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Age</td><td>결측치를 평균값으로 대체</td></tr>
+                  <tr><td>Sex</td><td>결측치를 최빈값(male)으로 대체</td></tr>
+                  <tr><td>기타 변수</td><td>결측치 없음</td></tr>
+                </tbody>
+              </table>
+              <p class="small">※ 평균/최빈값 대체는 분포(분산) 변화 가능성이 있어 해석 시 주의가 필요하다.</p>
+            </div>
+          </div>
+
+          <hr class="hr" />
+
+          <p class="lead">2.2 주요 변수 설명</p>
+          <table>
+            <thead>
+              <tr><th>변수 이름</th><th>의미</th><th>설명</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Survived</td><td>생존 여부</td><td>0은 사망, 1은 생존</td></tr>
+              <tr><td>Pclass</td><td>객실 등급</td><td>1~3등급</td></tr>
+              <tr><td>Sex</td><td>성별</td><td>남성 / 여성</td></tr>
+              <tr><td>Age</td><td>나이</td><td>승객의 나이</td></tr>
+              <tr><td>SibSp</td><td>형제·배우자 수</td><td>함께 탑승한 형제 또는 배우자 수</td></tr>
+              <tr><td>Parch</td><td>부모·자녀 수</td><td>함께 탑승한 부모 또는 자녀 수</td></tr>
+              <tr><td>Fare</td><td>요금</td><td>지불한 탑승 요금</td></tr>
+              <tr><td>Embarked</td><td>탑승 항구</td><td>승선한 항구</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s3" class="card">
+        <div class="card-head">
+          <h2>3. 분석 과정</h2>
+          <span class="badge">절차</span>
+        </div>
+        <div class="card-body">
+          <ol class="lead" style="margin:0; padding-left: 18px; color: rgba(255,255,255,0.84);">
+            <li>결측치 확인 및 전처리 수행</li>
+            <li>단일 변수 분포를 확인하는 <strong>일변량 분석</strong> 수행</li>
+            <li>두 개 이상의 변수 관계를 살펴보는 <strong>다변량 분석</strong> 수행</li>
+            <li>그래프를 기반으로 주요 특징과 의미 해석</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="s4" class="card">
+        <div class="card-head">
+          <h2>4. 분석 결과</h2>
+          <span class="badge">핵심 결과</span>
+        </div>
+        <div class="card-body">
+          <p class="lead"><strong>4-1. 일변량 분석 결과</strong></p>
+          <table>
+            <thead>
+              <tr><th>분석 항목</th><th>주요 내용</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>생존 여부</td><td>사망자가 생존자보다 많음</td></tr>
+              <tr><td>객실 등급</td><td>3등급 승객 비율이 가장 높음</td></tr>
+              <tr><td>성별</td><td>남성 승객이 여성보다 많음</td></tr>
+              <tr><td>나이</td><td>20~30대 승객 비중이 큼</td></tr>
+              <tr><td>요금</td><td>고가 요금이 소수 존재하며 분포가 한쪽으로 치우침</td></tr>
+              <tr><td>가족 동반</td><td>대부분 단독 승객</td></tr>
+              <tr><td>탑승 항구</td><td>Southampton(S) 출발이 가장 많음</td></tr>
+            </tbody>
+          </table>
+
+          <hr class="hr" />
+
+          <p class="lead"><strong>4-2. 다변량 분석 결과</strong></p>
+          <table>
+            <thead>
+              <tr><th>비교 항목</th><th>분석 결과</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>성별 × 생존</td><td>여성의 생존률이 남성보다 매우 높음</td></tr>
+              <tr><td>객실 등급 × 생존</td><td>1등급 승객의 생존률이 가장 높음</td></tr>
+              <tr><td>요금 × 생존</td><td>요금이 높을수록 생존률이 높은 경향</td></tr>
+              <tr><td>나이 × 생존</td><td>어린 승객의 생존률이 상대적으로 높음</td></tr>
+              <tr><td>가족 규모 × 생존</td><td>2~4명 소가족의 생존률이 가장 높음</td></tr>
+              <tr><td>항구 × 생존</td><td>항구별 차이는 있으나 간접적 영향(등급/요금 분포 차이) 가능성</td></tr>
+            </tbody>
+          </table>
+
+          <hr class="hr" />
+
+          <p class="lead"><strong>4-3. 수치형 변수 상관관계</strong></p>
+          <table>
+            <thead>
+              <tr><th>변수 관계</th><th>특징</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Pclass – Fare</td><td>강한 음의 상관관계</td></tr>
+              <tr><td>Fare – Survived</td><td>약한 양의 상관관계</td></tr>
+            </tbody>
+          </table>
+
+          <p class="small">
+            해석: 객실 등급과 요금은 서로 깊이 연결되어 있으며, 사회적 지위(등급/요금)가 생존과 연관될 가능성을 보여준다.
+          </p>
+        </div>
+      </section>
+
+      <section id="s5" class="card">
+        <div class="card-head">
+          <h2>5. 한계점 및 결론</h2>
+          <span class="badge">정리</span>
+        </div>
+        <div class="card-body">
+          <p class="lead"><strong>5.1 분석의 한계</strong></p>
+          <table>
+            <thead>
+              <tr><th>구분</th><th>내용</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>데이터 한계</td><td>표본 수가 제한적임</td></tr>
+              <tr><td>전처리 한계</td><td>평균 대체로 인한 정보 손실 가능성</td></tr>
+              <tr><td>분석 범위</td><td>EDA 단계로 인과관계까지는 설명 불가</td></tr>
+            </tbody>
+          </table>
+
+          <hr class="hr" />
+
+          <p class="lead"><strong>5.2 결론</strong></p>
+          <div class="note">
+            <ul style="margin: 0; padding-left: 18px;">
+              <li>성별과 객실 등급은 생존 여부와 매우 밀접한 관련이 있다.</li>
+              <li>사회적 지위와 경제적 조건은 재난 상황에서도 중요한 역할을 한다.</li>
+              <li>데이터 분석은 역사적 사건을 이해하는 데 유용한 도구가 될 수 있다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="viz" class="card">
+        <div class="card-head">
+          <h2>시각화 자료</h2>
+          <span class="badge">PNG 갤러리</span>
+        </div>
+        <div class="card-body">
+          <p class="lead">
+            아래는 분석 과정에서 생성된 그래프 파일을 웹페이지에 배치하기 위한 예시 갤러리이다.
+            같은 폴더에 이미지가 있을 때 자동으로 표시된다.
+          </p>
+          <div class="note" style="margin-bottom: 12px;">
+            <strong>사용 방법</strong>:
+            <ol style="margin: 8px 0 0; padding-left: 18px;">
+              <li>이 HTML 파일을 저장한다.</li>
+              <li>아래 이미지 파일들을 <code>plots/</code> 폴더에 넣는다.</li>
+              <li>브라우저로 HTML 파일을 열면 그래프가 나타난다.</li>
+            </ol>
+            <div class="small" style="margin-top: 8px;">
+              이미지 폴더 예시: <code>plots/01_survived_bar.png</code> … <code>plots/18_corr_heatmap.png</code>
+            </div>
+          </div>
+
+          <div class="gallery">
+            <figure>
+              <img src="plots/01_survived_bar.png" alt="생존 여부 분포" onerror="this.style.display='none'" />
+              <figcaption>01. 생존 여부 분포</figcaption>
+            </figure>
+            <figure>
+              <img src="plots/03_sex_bar.png" alt="성별 분포" onerror="this.style.display='none'" />
+              <figcaption>02. 성별 분포</figcaption>
+            </figure>
+            <figure>
+              <img src="plots/02_pclass_bar.png" alt="객실 등급 분포" onerror="this.style.display='none'" />
+              <figcaption>03. 객실 등급 분포</figcaption>
+            </figure>
+            <figure>
+              <img src="plots/05_fare_hist.png" alt="요금 분포" onerror="this.style.display='none'" />
+              <figcaption>04. 요금 분포</figcaption>
+            </figure>
+            <figure>
+              <img src="plots/09_surv_rate_by_sex.png" alt="성별별 생존률" onerror="this.style.display='none'" />
+              <figcaption>05. 성별별 생존률</figcaption>
+            </figure>
+            <figure>
+              <img src="plots/10_surv_rate_by_pclass.png" alt="객실 등급별 생존률" onerror="this.style.display='none'" />
+              <figcaption>06. 객실 등급별 생존률</figcaption>
+            </figure>
+          </div>
+
+          <p class="small">
+            ※ 전체 18개 그래프를 모두 넣으려면 위와 같은 <code>&lt;figure&gt;</code> 블록을 추가하면 된다.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        (본 웹페이지는 탐색적 데이터 분석(EDA) 결과를 정리한 문서이며, 인과관계를 단정하지 않는다.)
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
