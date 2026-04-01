@@ -1,0 +1,1831 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 협업 전문가 | 직장인을 위한 실무형 AI 활용</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ───────────────────────── RESET & BASE ───────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+      body {
+        font-family:
+          "Pretendard",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #ffffff;
+        color: #191f28;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* ───────────────────────── CSS VARIABLES ───────────────────────── */
+      :root {
+        --blue: #3182f6;
+        --blue-dark: #1b64da;
+        --blue-light: #ebf3fe;
+        --blue-mid: #d6e8fd;
+        --text-primary: #191f28;
+        --text-secondary: #4e5968;
+        --text-tertiary: #8b95a1;
+        --bg-white: #ffffff;
+        --bg-gray: #f9fafb;
+        --bg-blue: #ebf3fe;
+        --border: #e5e8eb;
+        --radius-sm: 10px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --radius-xl: 32px;
+        --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+        --shadow-hover: 0 12px 40px rgba(49, 130, 246, 0.16);
+        --nav-height: 68px;
+      }
+
+      /* ───────────────────────── SCROLLBAR ───────────────────────── */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--blue);
+        border-radius: 3px;
+      }
+
+      /* ───────────────────────── NAVIGATION ───────────────────────── */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-height);
+        z-index: 1000;
+        transition:
+          background 0.3s ease,
+          box-shadow 0.3s ease;
+        background: transparent;
+      }
+      .nav.scrolled {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 1px 0 var(--border);
+      }
+      .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--blue);
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .nav-logo .logo-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--blue);
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--blue);
+      }
+      .nav-cta {
+        background: var(--blue);
+        color: #fff !important;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        transition:
+          background 0.2s,
+          transform 0.2s !important;
+      }
+      .nav-cta:hover {
+        background: var(--blue-dark) !important;
+        transform: translateY(-1px);
+      }
+
+      /* ───────────────────────── HERO ───────────────────────── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-top: var(--nav-height);
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(
+          160deg,
+          #f0f7ff 0%,
+          #ffffff 50%,
+          #f8f4ff 100%
+        );
+      }
+      .hero-bg-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+      }
+      .hero-bg-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(49, 130, 246, 0.12) 0%,
+          transparent 70%
+        );
+        top: -100px;
+        right: -100px;
+      }
+      .hero-bg-blob-2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(139, 92, 246, 0.08) 0%,
+          transparent 70%
+        );
+        bottom: 100px;
+        left: -50px;
+      }
+      .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--blue-light);
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 100px;
+        margin-bottom: 28px;
+        border: 1px solid var(--blue-mid);
+      }
+      .hero-badge .badge-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--blue);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.3);
+        }
+      }
+      .hero-title {
+        font-size: clamp(38px, 4.5vw, 58px);
+        font-weight: 900;
+        line-height: 1.15;
+        letter-spacing: -1.5px;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+      }
+      .hero-title .highlight {
+        color: var(--blue);
+        position: relative;
+      }
+      .hero-title .highlight::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue), #7c3aed);
+        border-radius: 2px;
+        opacity: 0.3;
+      }
+      .hero-sub {
+        font-size: 18px;
+        font-weight: 400;
+        color: var(--text-secondary);
+        line-height: 1.75;
+        margin-bottom: 40px;
+        max-width: 480px;
+      }
+      .hero-sub strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+      .hero-btns {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 56px;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 16px 32px;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 24px rgba(49, 130, 246, 0.3);
+      }
+      .btn-primary:hover {
+        background: var(--blue-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(49, 130, 246, 0.4);
+      }
+      .btn-primary svg {
+        width: 18px;
+        height: 18px;
+      }
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 16px;
+        font-weight: 600;
+        padding: 16px 28px;
+        border-radius: var(--radius-md);
+        border: 1.5px solid var(--border);
+        text-decoration: none;
+        transition: all 0.25s ease;
+      }
+      .btn-secondary:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+        background: var(--blue-light);
+        transform: translateY(-2px);
+      }
+      .hero-stats {
+        display: flex;
+        gap: 32px;
+      }
+      .hero-stat {
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-stat-num {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+      .hero-stat-label {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        font-weight: 500;
+        margin-top: 4px;
+      }
+      .hero-stat-divider {
+        width: 1px;
+        background: var(--border);
+        align-self: stretch;
+      }
+
+      /* Hero Visual */
+      .hero-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-card-main {
+        background: #fff;
+        border-radius: var(--radius-xl);
+        padding: 36px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1);
+        width: 380px;
+        position: relative;
+        z-index: 2;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+      .hero-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .hero-card-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--blue), #7c3aed);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .hero-card-info-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .hero-card-info-role {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+      .hero-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .hero-card-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--bg-gray);
+        border-radius: var(--radius-sm);
+      }
+      .hero-card-row-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--blue-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .hero-card-row-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .hero-card-row-sub {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+      .hero-card-row-badge {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 100px;
+        background: #e6faf0;
+        color: #1fad6b;
+        flex-shrink: 0;
+      }
+      .hero-card-row-badge.new {
+        background: #fff3e0;
+        color: #e67e22;
+      }
+
+      .hero-float-card {
+        position: absolute;
+        background: #fff;
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border);
+        white-space: nowrap;
+        z-index: 3;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+      .float-top-right {
+        top: -20px;
+        right: -40px;
+        animation-delay: 0.5s;
+      }
+      .float-bottom-left {
+        bottom: 10px;
+        left: -50px;
+        animation-delay: 1.2s;
+      }
+      .float-card-icon {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+      .float-card-text {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .float-card-sub {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+
+      /* ───────────────────────── SECTION BASE ───────────────────────── */
+      section {
+        padding: 100px 0;
+      }
+      .section-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 16px;
+      }
+      .section-title {
+        font-size: clamp(28px, 3.5vw, 44px);
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1.2;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+      }
+      .section-sub {
+        font-size: 17px;
+        color: var(--text-secondary);
+        line-height: 1.75;
+        max-width: 560px;
+      }
+      .section-head {
+        margin-bottom: 64px;
+      }
+      .section-head.center {
+        text-align: center;
+      }
+      .section-head.center .section-sub {
+        margin: 0 auto;
+      }
+
+      /* ───────────────────────── SECTION 2: PROBLEM ───────────────────────── */
+      .problem {
+        background: var(--bg-white);
+      }
+      .before-after {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 64px;
+      }
+      .ba-panel {
+        background: var(--bg-gray);
+        border-radius: var(--radius-lg);
+        padding: 36px;
+        border: 1.5px solid var(--border);
+      }
+      .ba-panel.after {
+        background: linear-gradient(135deg, var(--blue-light) 0%, #f0eeff 100%);
+        border-color: var(--blue-mid);
+      }
+      .ba-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        background: rgba(0, 0, 0, 0.06);
+        color: var(--text-secondary);
+      }
+      .ba-panel.after .ba-label {
+        background: var(--blue);
+        color: #fff;
+      }
+      .ba-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .ba-item:last-child {
+        margin-bottom: 0;
+      }
+      .ba-icon {
+        font-size: 18px;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+      .ba-text {
+        font-size: 15px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+      .ba-panel.after .ba-text {
+        color: var(--text-primary);
+      }
+      .ba-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        background: var(--blue);
+        border-radius: 50%;
+        color: #fff;
+        font-size: 22px;
+        flex-shrink: 0;
+        box-shadow: 0 8px 24px rgba(49, 130, 246, 0.3);
+      }
+
+      .problem-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .problem-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        border: 1.5px solid var(--border);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .problem-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue), #7c3aed);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+      }
+      .problem-card:hover::before {
+        transform: scaleX(1);
+      }
+      .problem-card:hover {
+        border-color: var(--blue-mid);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-4px);
+      }
+      .problem-card-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-tertiary);
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+      .problem-card-icon {
+        width: 52px;
+        height: 52px;
+        background: var(--blue-light);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 20px;
+      }
+      .problem-card-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        letter-spacing: -0.3px;
+      }
+      .problem-card-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      /* ───────────────────────── SECTION 3: SOLUTION ───────────────────────── */
+      .solution {
+        background: var(--bg-gray);
+      }
+      .solution-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+      .solution-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        padding: 36px;
+        border: 1.5px solid var(--border);
+        transition: all 0.3s ease;
+        display: flex;
+        gap: 20px;
+      }
+      .solution-card:hover {
+        border-color: var(--blue);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-3px);
+      }
+      .solution-card.featured {
+        grid-column: span 2;
+        background: linear-gradient(135deg, var(--blue) 0%, #5b21b6 100%);
+        border: none;
+        color: #fff;
+      }
+      .solution-card.featured .solution-card-title {
+        color: #fff;
+      }
+      .solution-card.featured .solution-card-desc {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .solution-card.featured .solution-icon-wrap {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .solution-card.featured .solution-tag {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+      .solution-icon-wrap {
+        width: 56px;
+        height: 56px;
+        background: var(--blue-light);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+      }
+      .solution-content {
+        flex: 1;
+      }
+      .solution-tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--blue);
+        background: var(--blue-light);
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .solution-card-title {
+        font-size: 19px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        letter-spacing: -0.3px;
+      }
+      .solution-card-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .solution-card.featured .solution-card-title {
+        font-size: 24px;
+      }
+
+      /* ───────────────────────── SECTION 4: BRAND ───────────────────────── */
+      .brand {
+        background: var(--bg-white);
+      }
+      .brand-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .brand-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+      .brand-circle-bg {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        background: linear-gradient(135deg, var(--blue-light) 0%, #ede9fe 100%);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .brand-profile-card {
+        position: relative;
+        background: #fff;
+        border-radius: var(--radius-xl);
+        padding: 40px 36px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1);
+        width: 320px;
+        text-align: center;
+        border: 1px solid var(--border);
+        z-index: 2;
+      }
+      .brand-avatar {
+        width: 96px;
+        height: 96px;
+        background: linear-gradient(135deg, var(--blue), #7c3aed);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 44px;
+        box-shadow: 0 8px 24px rgba(49, 130, 246, 0.3);
+      }
+      .brand-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+      .brand-role {
+        font-size: 14px;
+        color: var(--blue);
+        font-weight: 600;
+        margin-bottom: 24px;
+      }
+      .brand-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+      .brand-tag {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: var(--blue-light);
+        color: var(--blue);
+        border: 1px solid var(--blue-mid);
+      }
+      .brand-divider {
+        height: 1px;
+        background: var(--border);
+        margin-bottom: 24px;
+      }
+      .brand-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .brand-metric {
+        text-align: center;
+      }
+      .brand-metric-num {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: -0.5px;
+      }
+      .brand-metric-label {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+
+      .brand-float-1 {
+        position: absolute;
+        top: -10px;
+        right: 20px;
+        z-index: 3;
+        animation: float 3s ease-in-out infinite 0.3s;
+      }
+      .brand-float-2 {
+        position: absolute;
+        bottom: 0px;
+        left: 10px;
+        z-index: 3;
+        animation: float 3s ease-in-out infinite 1s;
+      }
+      .brand-float-chip {
+        background: #fff;
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+      .brand-float-chip .chip-icon {
+        font-size: 16px;
+      }
+
+      .brand-content {
+      }
+      .brand-tagline {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--blue);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .brand-tagline::before {
+        content: "";
+        width: 24px;
+        height: 3px;
+        background: var(--blue);
+        border-radius: 2px;
+      }
+      .brand-headline {
+        font-size: clamp(28px, 3vw, 40px);
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1.2;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+      }
+      .brand-desc {
+        font-size: 16px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 40px;
+      }
+      .brand-values {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .brand-value-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 20px;
+        background: var(--bg-gray);
+        border-radius: var(--radius-md);
+        border: 1.5px solid transparent;
+        transition: all 0.3s;
+      }
+      .brand-value-item:hover {
+        border-color: var(--blue-mid);
+        background: var(--blue-light);
+      }
+      .brand-value-icon {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        background: var(--blue-light);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        transition: background 0.3s;
+      }
+      .brand-value-item:hover .brand-value-icon {
+        background: #fff;
+      }
+      .brand-value-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+      .brand-value-desc {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* ───────────────────────── SECTION 5: CTA ───────────────────────── */
+      .cta-section {
+        background: linear-gradient(135deg, #1a56db 0%, #5b21b6 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      .cta-blob-1 {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.06) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        top: -200px;
+        right: -100px;
+        pointer-events: none;
+      }
+      .cta-blob-2 {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.06) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        bottom: -150px;
+        left: -50px;
+        pointer-events: none;
+      }
+      .cta-inner {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .cta-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+      }
+      .cta-title {
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        line-height: 1.15;
+        color: #fff;
+        margin-bottom: 20px;
+      }
+      .cta-sub {
+        font-size: 17px;
+        color: rgba(255, 255, 255, 0.75);
+        line-height: 1.75;
+        margin-bottom: 48px;
+      }
+      .cta-btns {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+      .btn-cta-white {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        color: var(--blue);
+        font-size: 17px;
+        font-weight: 800;
+        padding: 18px 40px;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+      .btn-cta-white:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      }
+      .btn-cta-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-size: 17px;
+        font-weight: 700;
+        padding: 18px 36px;
+        border-radius: var(--radius-md);
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(8px);
+      }
+      .btn-cta-ghost:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translateY(-3px);
+      }
+      .cta-trust {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .cta-trust-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 500;
+      }
+      .cta-trust-icon {
+        font-size: 16px;
+      }
+
+      /* ───────────────────────── FOOTER ───────────────────────── */
+      footer {
+        background: #0f172a;
+        padding: 64px 0 40px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 64px;
+        margin-bottom: 56px;
+      }
+      .footer-brand-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .footer-brand-name .f-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--blue);
+        border-radius: 50%;
+      }
+      .footer-brand-desc {
+        font-size: 14px;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.45);
+        max-width: 280px;
+        margin-bottom: 24px;
+      }
+      .footer-social {
+        display: flex;
+        gap: 12px;
+      }
+      .footer-social-btn {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
+      .footer-social-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+      .footer-col-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 20px;
+        letter-spacing: 0.3px;
+      }
+      .footer-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .footer-links a {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.45);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .footer-links a:hover {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .footer-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-bottom: 32px;
+      }
+      .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .footer-copy {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+      }
+      .footer-bottom-links {
+        display: flex;
+        gap: 24px;
+      }
+      .footer-bottom-links a {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+      }
+
+      /* ───────────────────────── ANIMATIONS ───────────────────────── */
+      .fade-up {
+        opacity: 0;
+        transform: translateY(32px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .fade-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .fade-up-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .fade-up-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .fade-up-delay-3 {
+        transition-delay: 0.3s;
+      }
+      .fade-up-delay-4 {
+        transition-delay: 0.4s;
+      }
+      .fade-up-delay-5 {
+        transition-delay: 0.5s;
+      }
+
+      /* ───────────────────────── RESPONSIVE ───────────────────────── */
+      @media (max-width: 1024px) {
+        .hero-inner {
+          grid-template-columns: 1fr;
+          gap: 60px;
+        }
+        .hero-visual {
+          display: none;
+        }
+        .before-after {
+          grid-template-columns: 1fr;
+        }
+        .ba-arrow {
+          transform: rotate(90deg);
+          margin: 0 auto;
+        }
+        .problem-cards {
+          grid-template-columns: 1fr;
+        }
+        .solution-grid {
+          grid-template-columns: 1fr;
+        }
+        .solution-card.featured {
+          grid-column: span 1;
+        }
+        .brand-inner {
+          grid-template-columns: 1fr;
+        }
+        .brand-visual {
+          display: none;
+        }
+        .footer-top {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        section {
+          padding: 72px 0;
+        }
+        .nav-links {
+          display: none;
+        }
+        .hero-title {
+          font-size: 36px;
+        }
+        .hero-stats {
+          gap: 20px;
+        }
+        .footer-top {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+      }
+
+      /* ───────────────────────── UTILITY ───────────────────────── */
+      .text-blue {
+        color: var(--blue);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+    <nav class="nav" id="nav">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo">
+          <span class="logo-dot"></span>
+          AI협업전문가
+        </a>
+        <ul class="nav-links">
+          <li><a href="#problem">AI와 일하기</a></li>
+          <li><a href="#solution">실전 활용법</a></li>
+          <li><a href="#brand">소개</a></li>
+          <li>
+            <a
+              href="https://forms.gle/gLBvzYZ4jfG6MMG6A"
+              target="_blank"
+              rel="noopener"
+              class="nav-cta"
+              >지금 시작하기</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="hero" id="hero">
+      <div class="hero-bg-blob hero-bg-blob-1"></div>
+      <div class="hero-bg-blob hero-bg-blob-2"></div>
+      <div class="hero-inner">
+        <!-- Left: Text -->
+        <div class="hero-text">
+          <div class="hero-badge fade-up">
+            <span class="badge-dot"></span>
+            AI 협업 전문가 · 직장인을 위한 실전 가이드
+          </div>
+          <h1 class="hero-title fade-up fade-up-delay-1">
+            AI와 함께,<br />
+            <span class="highlight">더 빠르고</span><br />
+            창의적으로<br />일하는 법
+          </h1>
+          <p class="hero-sub fade-up fade-up-delay-2">
+            AI 활용이 <strong>막막한 직장인</strong>에게<br />
+            실무에서 바로 적용 가능한 AI 협업법을 제공합니다.<br />
+            막막함은 줄이고, 일은 더 빠르고 똑똑하게.
+          </p>
+          <div class="hero-btns fade-up fade-up-delay-3">
+            <a
+              href="https://forms.gle/gLBvzYZ4jfG6MMG6A"
+              target="_blank"
+              rel="noopener"
+              class="btn-primary"
+            >
+              지금 바로 시작하기
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a href="#solution" class="btn-secondary"> 실전 활용법 보기 </a>
+          </div>
+          <div class="hero-stats fade-up fade-up-delay-4">
+            <div class="hero-stat">
+              <span class="hero-stat-num">3가지</span>
+              <span class="hero-stat-label">핵심 AI 협업 주제</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num">즉시</span>
+              <span class="hero-stat-label">실무 적용 가능</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num">무료</span>
+              <span class="hero-stat-label">관심 등록</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Visual Card -->
+        <div class="hero-visual fade-up fade-up-delay-2">
+          <div class="hero-float-card float-top-right">
+            <div class="float-card-icon">⚡</div>
+            <div class="float-card-text">업무 속도 3배 향상</div>
+            <div class="float-card-sub">AI 협업 도입 후 평균 효과</div>
+          </div>
+          <div class="hero-card-main">
+            <div class="hero-card-header">
+              <div class="hero-card-avatar">🤖</div>
+              <div>
+                <div class="hero-card-info-name">AI 협업 대시보드</div>
+                <div class="hero-card-info-role">오늘의 업무 현황</div>
+              </div>
+            </div>
+            <div class="hero-card-body">
+              <div class="hero-card-row">
+                <div class="hero-card-row-icon">📝</div>
+                <div>
+                  <div class="hero-card-row-text">보고서 초안 작성</div>
+                  <div class="hero-card-row-sub">AI 협업으로 30분 → 5분</div>
+                </div>
+                <span class="hero-card-row-badge">완료</span>
+              </div>
+              <div class="hero-card-row">
+                <div class="hero-card-row-icon">📊</div>
+                <div>
+                  <div class="hero-card-row-text">데이터 분석 요약</div>
+                  <div class="hero-card-row-sub">자동 인사이트 추출</div>
+                </div>
+                <span class="hero-card-row-badge">완료</span>
+              </div>
+              <div class="hero-card-row">
+                <div class="hero-card-row-icon">💡</div>
+                <div>
+                  <div class="hero-card-row-text">아이디어 브레인스토밍</div>
+                  <div class="hero-card-row-sub">창의적 업무에 집중</div>
+                </div>
+                <span class="hero-card-row-badge new">진행중</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-float-card float-bottom-left">
+            <div class="float-card-icon">🎯</div>
+            <div class="float-card-text">창의적 업무에 집중</div>
+            <div class="float-card-sub">반복 업무는 AI에게</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SECTION 2: PROBLEM ═══════════════════ -->
+    <section class="problem" id="problem">
+      <div class="section-inner">
+        <div class="section-head fade-up">
+          <div class="section-badge">📌 Theme 01</div>
+          <h2 class="section-title">
+            AI로 일하는 방식이<br />어떻게 달라지는가
+          </h2>
+          <p class="section-sub">
+            막막함은 줄이고, 일은 더 빠르고 똑똑하게.<br />AI 도입 전후의 업무
+            방식 변화를 직접 경험해보세요.
+          </p>
+        </div>
+
+        <div class="before-after fade-up fade-up-delay-1">
+          <div class="ba-panel">
+            <span class="ba-label">Before · AI 없이</span>
+            <div class="ba-item">
+              <span class="ba-icon">😰</span>
+              <span class="ba-text">보고서 하나에 반나절 소모</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">🔄</span>
+              <span class="ba-text">단순 반복 업무에 에너지 낭비</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">😵</span>
+              <span class="ba-text">어디서 시작해야 할지 막막</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">⏰</span>
+              <span class="ba-text">창의적 업무는 항상 뒷전</span>
+            </div>
+          </div>
+          <div class="ba-arrow">→</div>
+          <div class="ba-panel after">
+            <span class="ba-label">After · AI 협업 후</span>
+            <div class="ba-item">
+              <span class="ba-icon">🚀</span>
+              <span class="ba-text">보고서 초안, AI와 함께 5분 완성</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">⚡</span>
+              <span class="ba-text">반복 업무 자동화로 시간 확보</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">🎯</span>
+              <span class="ba-text">명확한 AI 활용 시작점 확보</span>
+            </div>
+            <div class="ba-item">
+              <span class="ba-icon">✨</span>
+              <span class="ba-text">더 가치 있는 일에 에너지 집중</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="problem-cards">
+          <div class="problem-card fade-up fade-up-delay-1">
+            <div class="problem-card-num">01</div>
+            <div class="problem-card-icon">🧠</div>
+            <h3 class="problem-card-title">생각의 속도로 일하기</h3>
+            <p class="problem-card-desc">
+              머릿속 아이디어를 AI와 함께 즉시 실행으로 옮기세요. 초안 작성,
+              아이디어 구체화, 리서치까지 생각의 속도로 처리합니다.
+            </p>
+          </div>
+          <div class="problem-card fade-up fade-up-delay-2">
+            <div class="problem-card-icon">🔓</div>
+            <h3 class="problem-card-title">막막함에서 명확함으로</h3>
+            <p class="problem-card-desc">
+              복잡한 업무도 AI에게 맥락을 설명하면 구체적인 실행 단계로 분해해
+              줍니다. 더 이상 어디서 시작할지 고민하지 않아도 됩니다.
+            </p>
+          </div>
+          <div class="problem-card fade-up fade-up-delay-3">
+            <div class="problem-card-icon">🎨</div>
+            <h3 class="problem-card-title">창의적 업무에 집중</h3>
+            <p class="problem-card-desc">
+              반복적이고 단순한 업무는 AI에게 맡기고, 당신은 판단, 관계,
+              창의성이 필요한 고부가가치 업무에만 집중하세요.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SECTION 3: SOLUTION ═══════════════════ -->
+    <section class="solution" id="solution">
+      <div class="section-inner">
+        <div class="section-head center fade-up">
+          <div class="section-badge">💼 Theme 02</div>
+          <h2 class="section-title">직장인을 위한<br />실무형 AI 협업법</h2>
+          <p class="section-sub">
+            이론이 아니라 바로 써먹는 실전 활용.<br />오늘 당장 업무에 적용할 수
+            있는 AI 협업 방법을 알려드립니다.
+          </p>
+        </div>
+
+        <div class="solution-grid">
+          <div class="solution-card featured fade-up">
+            <div class="solution-icon-wrap">🌟</div>
+            <div class="solution-content">
+              <span class="solution-tag">핵심 전략</span>
+              <h3 class="solution-card-title">
+                프롬프트 설계로 업무 효율 극대화
+              </h3>
+              <p class="solution-card-desc">
+                맥락(Context), 역할(Role), 결과물(Output)을 명확히 정의하는 CRO
+                프레임워크를 활용하면 AI가 원하는 결과를 훨씬 정확하게
+                출력합니다. 단순한 질문에서 전략적 지시로 업그레이드하세요.
+              </p>
+            </div>
+          </div>
+          <div class="solution-card fade-up fade-up-delay-1">
+            <div class="solution-icon-wrap">📝</div>
+            <div class="solution-content">
+              <span class="solution-tag">문서 작성</span>
+              <h3 class="solution-card-title">보고서 & 기획서 초안 5분 완성</h3>
+              <p class="solution-card-desc">
+                주요 포인트만 던져주면 AI가 구조화된 초안을 생성합니다. 당신은
+                방향을 잡고 AI가 채워주는 협업 방식으로 전환하세요.
+              </p>
+            </div>
+          </div>
+          <div class="solution-card fade-up fade-up-delay-2">
+            <div class="solution-icon-wrap">📊</div>
+            <div class="solution-content">
+              <span class="solution-tag">데이터 분석</span>
+              <h3 class="solution-card-title">
+                복잡한 데이터, AI로 인사이트 추출
+              </h3>
+              <p class="solution-card-desc">
+                방대한 데이터를 AI에게 설명하고 질문하면 핵심 패턴과 시사점을
+                빠르게 파악할 수 있습니다.
+              </p>
+            </div>
+          </div>
+          <div class="solution-card fade-up fade-up-delay-3">
+            <div class="solution-icon-wrap">🗣️</div>
+            <div class="solution-content">
+              <span class="solution-tag">커뮤니케이션</span>
+              <h3 class="solution-card-title">
+                이메일 & 슬랙 메시지 품질 향상
+              </h3>
+              <p class="solution-card-desc">
+                간략한 메모를 완성도 높은 업무 메시지로 변환하거나, 상황에 맞는
+                어조를 AI와 함께 조율하세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SECTION 4: BRAND ═══════════════════ -->
+    <section class="brand" id="brand">
+      <div class="section-inner">
+        <div class="brand-inner">
+          <!-- Visual -->
+          <div class="brand-visual fade-up">
+            <div class="brand-circle-bg"></div>
+            <div class="brand-float-1">
+              <div class="brand-float-chip">
+                <span class="chip-icon">🏆</span>
+                AI 활용 전문가
+              </div>
+            </div>
+            <div class="brand-profile-card">
+              <div class="brand-avatar">👤</div>
+              <div class="brand-name">AI 협업 전문가</div>
+              <div class="brand-role">실무형 AI 코치 & 브랜드</div>
+              <div class="brand-tags">
+                <span class="brand-tag">AI 협업</span>
+                <span class="brand-tag">생산성</span>
+                <span class="brand-tag">퍼스널브랜딩</span>
+                <span class="brand-tag">실전 활용</span>
+              </div>
+              <div class="brand-divider"></div>
+              <div class="brand-metrics">
+                <div class="brand-metric">
+                  <div class="brand-metric-num">3+</div>
+                  <div class="brand-metric-label">핵심 주제</div>
+                </div>
+                <div class="brand-metric">
+                  <div class="brand-metric-num">즉시</div>
+                  <div class="brand-metric-label">적용 가능</div>
+                </div>
+                <div class="brand-metric">
+                  <div class="brand-metric-num">무료</div>
+                  <div class="brand-metric-label">시작 비용</div>
+                </div>
+              </div>
+            </div>
+            <div class="brand-float-2">
+              <div class="brand-float-chip">
+                <span class="chip-icon">🚀</span>
+                창의적 업무 집중 가능
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="brand-content fade-up fade-up-delay-2">
+            <div class="brand-tagline">Theme 03</div>
+            <h2 class="brand-headline">
+              AI와 함께<br />더 창의적으로<br />일하는 사람의 브랜드
+            </h2>
+            <p class="brand-desc">
+              생산성 향상을 넘어, 더 가치 있는 일에 집중하는 사람.<br />
+              AI를 도구로 삼아 자신만의 전문성을 극대화하고,<br />
+              직장에서 대체 불가능한 존재로 성장하는 여정을 함께합니다.
+            </p>
+            <div class="brand-values">
+              <div class="brand-value-item">
+                <div class="brand-value-icon">💡</div>
+                <div>
+                  <div class="brand-value-title">실전 중심의 접근</div>
+                  <div class="brand-value-desc">
+                    이론보다 실제 업무에 바로 적용 가능한 방법론을 최우선합니다.
+                  </div>
+                </div>
+              </div>
+              <div class="brand-value-item">
+                <div class="brand-value-icon">🎯</div>
+                <div>
+                  <div class="brand-value-title">개인 맞춤 성장</div>
+                  <div class="brand-value-desc">
+                    직종과 역할에 맞는 AI 활용법으로 각자의 강점을 극대화합니다.
+                  </div>
+                </div>
+              </div>
+              <div class="brand-value-item">
+                <div class="brand-value-icon">🔗</div>
+                <div>
+                  <div class="brand-value-title">지속적인 커뮤니티</div>
+                  <div class="brand-value-desc">
+                    함께 성장하는 AI 활용 직장인 네트워크를 만들어갑니다.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SECTION 5: CTA ═══════════════════ -->
+    <section class="cta-section" id="cta">
+      <div class="cta-blob-1"></div>
+      <div class="cta-blob-2"></div>
+      <div class="cta-inner fade-up">
+        <div class="cta-eyebrow">✦ 지금 바로 시작하세요</div>
+        <h2 class="cta-title">AI로 일하는 방식을<br />바꿀 준비가 됐나요?</h2>
+        <p class="cta-sub">
+          막막함은 이제 그만. 직장인을 위한 실전형 AI 협업법으로<br />
+          오늘부터 더 빠르고, 더 창의적으로 일하세요.
+        </p>
+        <div class="cta-btns">
+          <a
+            href="https://forms.gle/gLBvzYZ4jfG6MMG6A"
+            target="_blank"
+            rel="noopener"
+            class="btn-cta-white"
+          >
+            🚀 관심 등록하기 (무료)
+          </a>
+          <a href="#problem" class="btn-cta-ghost"> 먼저 더 알아보기 </a>
+        </div>
+        <div class="cta-trust">
+          <div class="cta-trust-item">
+            <span class="cta-trust-icon">✅</span>
+            무료로 시작
+          </div>
+          <div class="cta-trust-item">
+            <span class="cta-trust-icon">⚡</span>
+            즉시 적용 가능
+          </div>
+          <div class="cta-trust-item">
+            <span class="cta-trust-icon">🔒</span>
+            스팸 없음
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div>
+            <div class="footer-brand-name">
+              <span class="f-dot"></span>
+              AI협업전문가
+            </div>
+            <p class="footer-brand-desc">
+              AI 활용이 막막한 직장인에게 실무에서 바로 적용 가능한 AI 협업
+              방법을 제공합니다.
+            </p>
+            <div class="footer-social">
+              <div class="footer-social-btn">📧</div>
+              <div class="footer-social-btn">💼</div>
+              <div class="footer-social-btn">🐦</div>
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">콘텐츠</div>
+            <ul class="footer-links">
+              <li><a href="#problem">AI와 일하기</a></li>
+              <li><a href="#solution">실전 활용법</a></li>
+              <li><a href="#brand">브랜드 소개</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="footer-col-title">문의</div>
+            <ul class="footer-links">
+              <li><a href="#cta">관심 등록</a></li>
+              <li><a href="#">이메일 문의</a></li>
+              <li><a href="#">뉴스레터 구독</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-bottom">
+          <span class="footer-copy"
+            >© 2026 AI협업전문가. All rights reserved.</span
+          >
+          <div class="footer-bottom-links">
+            <a href="#">개인정보처리방침</a>
+            <a href="#">이용약관</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+    <script>
+      // ── Nav scroll effect ──
+      const nav = document.getElementById("nav");
+      window.addEventListener(
+        "scroll",
+        () => {
+          nav.classList.toggle("scrolled", window.scrollY > 20);
+        },
+        { passive: true },
+      );
+
+      // ── Intersection Observer for fade-up animations ──
+      const fadeEls = document.querySelectorAll(".fade-up");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+      );
+      fadeEls.forEach((el) => observer.observe(el));
+
+      // ── Smooth scroll for anchor links ──
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", (e) => {
+          const target = document.querySelector(anchor.getAttribute("href"));
+          if (target) {
+            e.preventDefault();
+            const offset = 80;
+            window.scrollTo({
+              top: target.offsetTop - offset,
+              behavior: "smooth",
+            });
+          }
+        });
+      });
+
+      // ── Counter animation for hero stats ──
+      const heroStats = document.querySelectorAll(".hero-stat-num");
+      const statsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.transition = "transform 0.5s ease";
+              entry.target.style.transform = "scale(1.08)";
+              setTimeout(() => {
+                entry.target.style.transform = "scale(1)";
+              }, 300);
+              statsObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      heroStats.forEach((el) => statsObserver.observe(el));
+
+      // ── Stagger children inside cards ──
+      document
+        .querySelectorAll(".problem-cards, .solution-grid")
+        .forEach((container) => {
+          const children = container.querySelectorAll(
+            ".problem-card, .solution-card",
+          );
+          children.forEach((child, i) => {
+            child.style.transitionDelay = `${i * 0.08}s`;
+          });
+        });
+    </script>
+  </body>
+</html>
