@@ -69,3 +69,6 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
+.formbox #msg {
+  color: #fff;
+}
