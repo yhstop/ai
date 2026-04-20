@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>충청북도 음식업소 정보 서비스</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+        background: #f5f7fb;
+        color: #1f2937;
+      }
+
+      .app {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
+        color: #fff;
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+      }
+
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: 2rem;
+        font-weight: 800;
+      }
+
+      .hero p {
+        margin: 0;
+        opacity: 0.9;
+        line-height: 1.6;
+      }
+
+      .search-panel {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 20px;
+        padding: 16px;
+        backdrop-filter: blur(10px);
+      }
+
+      .search-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 130px 130px;
+        gap: 12px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .field input,
+      .field select {
+        width: 100%;
+        height: 48px;
+        border: 0;
+        outline: none;
+        border-radius: 14px;
+        padding: 0 14px;
+        background: #fff;
+        color: #111827;
+        font-size: 0.95rem;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 14px;
+        cursor: pointer;
+        height: 48px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn-primary {
+        background: #f59e0b;
+        color: #111827;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #111827;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .panel {
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+      }
+
+      .panel-head {
+        padding: 20px 20px 12px;
+        border-bottom: 1px solid #eef2f7;
+      }
+
+      .panel-head h2 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        color: #6b7280;
+        font-size: 0.92rem;
+      }
+
+      .list-wrap {
+        max-height: 720px;
+        overflow-y: auto;
+        padding: 12px;
+      }
+
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+
+      .card:hover,
+      .card.active {
+        border-color: #2563eb;
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .badge-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-gray {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .card p {
+        margin: 6px 0;
+        color: #4b5563;
+        line-height: 1.5;
+        font-size: 0.92rem;
+      }
+
+      .detail {
+        display: grid;
+        grid-template-rows: 420px auto;
+        min-height: 760px;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+        background: #e5e7eb;
+      }
+
+      .detail-body {
+        padding: 24px;
+      }
+
+      .detail-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 280px;
+        color: #6b7280;
+        font-size: 1rem;
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        border-radius: 18px;
+        border: 1px dashed #d1d5db;
+      }
+
+      .detail-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .detail-title h3 {
+        margin: 0 0 10px;
+        font-size: 1.8rem;
+      }
+
+      .detail-section {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eef2f7;
+      }
+
+      .detail-section:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .detail-section h4 {
+        margin: 0 0 12px;
+        font-size: 1rem;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .info-item {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .info-item strong {
+        display: block;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 6px;
+      }
+
+      .info-item span,
+      .detail-section p,
+      .detail-section li {
+        line-height: 1.65;
+        color: #111827;
+      }
+
+      .menu-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .menu-list li {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px 20px;
+      }
+
+      .pagination button {
+        min-width: 44px;
+        height: 44px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .pagination button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 14px;
+        font-size: 0.92rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .loading,
+      .error-box {
+        margin: 12px;
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      .loading {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .error-box {
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+
+      a.inline-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      @media (max-width: 1080px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .detail {
+          grid-template-rows: 360px auto;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .search-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app {
+          padding: 16px;
+        }
+        .hero {
+          padding: 22px;
+          border-radius: 20px;
+        }
+        .hero h1 {
+          font-size: 1.6rem;
+        }
+        .search-grid {
+          grid-template-columns: 1fr;
+        }
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+        .detail {
+          grid-template-rows: 300px auto;
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <section class="hero">
+        <h1>충청북도 음식업소 정보 서비스</h1>
+        <p>
+          충청북도 음식업소 정보를 검색하고, 시군별로 필터링하고, 상세 정보를
+          확인할 수 있는 브라우저 기반 앱입니다.
+        </p>
+
+        <div class="search-panel">
+          <div class="search-grid">
+            <div class="field">
+              <label for="keyword">상호명 검색</label>
+              <input id="keyword" type="text" placeholder="예: 지선생쌈촌" />
+            </div>
+
+            <div class="field">
+              <label for="sigunFilter">시군 필터</label>
+              <select id="sigunFilter">
+                <option value="">전체 시군</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="searchBtn" class="btn btn-primary">검색</button>
+            </div>
+
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="resetBtn" class="btn btn-secondary">초기화</button>
+            </div>
+          </div>
+          <div class="status" id="statusText">
+            API 키를 입력한 뒤 검색을 눌러주세요.
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>업소 목록</h2>
+            <div class="meta-row">
+              <span id="resultSummary">검색 결과가 없습니다.</span>
+              <span id="pageSummary">0 / 0 페이지</span>
+            </div>
+          </div>
+
+          <div id="listWrap" class="list-wrap">
+            <div class="detail-empty">왼쪽 목록에 음식업소가 표시됩니다.</div>
+          </div>
+
+          <div class="pagination">
+            <button id="prevBtn" type="button">〈</button>
+            <span id="paginationText">1 / 1</span>
+            <button id="nextBtn" type="button">〉</button>
+          </div>
+        </div>
+
+        <div class="panel detail">
+          <div id="map"></div>
+          <div class="detail-body" id="detailBody">
+            <div class="detail-empty">
+              업소를 선택하면 상세 정보가 여기에 표시됩니다.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /* =========================
+         사용자 설정 영역
+      ========================= */
+      const SERVICE_KEY =
+        "U3rjn1OQzoe833jk5RJokTl1sVFUmIQp7dGTZl0tcvNU7p2blLzjccSSgrAHQgyLYlBIm7Qt0wOFwQRvvG7h8Q==";
+      const API_BASE_URL =
+        "https://apis.data.go.kr/6430000/cbRecreationalFoodInfoService/getRecreationalFoodInfo";
+
+      /*
+        카카오맵을 쓰지 않는 버전입니다.
+        순수 HTML/CSS/JS만으로 구현하라는 요청에 맞춰,
+        상세 영역에는 선택한 업소의 위도/경도를 기준으로
+        OpenStreetMap iframe 지도를 표시합니다.
+      */
+
+      const state = {
+        currentPage: 1,
+        perPage: 10,
+        totalRows: 0,
+        totalPages: 1,
+        keyword: "",
+        sigun: "",
+        items: [],
+        filteredItems: [],
+        selectedId: null,
+        sigunOptions: new Set(),
+      };
+
+      const $keyword = document.getElementById("keyword");
+      const $sigunFilter = document.getElementById("sigunFilter");
+      const $searchBtn = document.getElementById("searchBtn");
+      const $resetBtn = document.getElementById("resetBtn");
+      const $statusText = document.getElementById("statusText");
+      const $listWrap = document.getElementById("listWrap");
+      const $detailBody = document.getElementById("detailBody");
+      const $resultSummary = document.getElementById("resultSummary");
+      const $pageSummary = document.getElementById("pageSummary");
+      const $paginationText = document.getElementById("paginationText");
+      const $prevBtn = document.getElementById("prevBtn");
+      const $nextBtn = document.getElementById("nextBtn");
+      const $map = document.getElementById("map");
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function normalizeText(value) {
+        return String(value ?? "").trim();
+      }
+
+      function splitMenus(menuText) {
+        if (!menuText) return [];
+        return menuText
+          .split(/[,/]|\s{2,}/)
+          .map((v) => v.trim())
+          .filter(Boolean)
+          .slice(0, 12);
+      }
+
+      function setStatus(message, isError = false) {
+        $statusText.textContent = message;
+        $statusText.style.color = isError
+          ? "#fecaca"
+          : "rgba(255,255,255,0.92)";
+      }
+
+      function buildUrl(page = 1) {
+        const params = new URLSearchParams({
+          serviceKey: SERVICE_KEY,
+          currentPage: String(page),
+          perPage: String(state.perPage),
+        });
+
+        if (state.keyword) {
+          params.append("CMPNM", state.keyword);
+        }
+
+        return `${API_BASE_URL}?${params.toString()}`;
+      }
+
+      async function fetchFoodList(page = 1) {
+        if (!SERVICE_KEY || SERVICE_KEY.includes("여기에_공공데이터_API_KEY")) {
+          setStatus("SERVICE_KEY 값을 먼저 입력해주세요.", true);
+          renderError(
+            "코드 상단의 SERVICE_KEY 값을 실제 인증키로 변경해주세요.",
+          );
+          return;
+        }
+
+        state.currentPage = page;
+        renderLoading();
+        setStatus("데이터를 불러오는 중입니다...");
+
+        try {
+          const response = await fetch(buildUrl(page));
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const result = await response.json();
+          const items = Array.isArray(result?.data) ? result.data : [];
+
+          state.items = items.map((item, index) => ({
+            ...item,
+            _id: `${page}-${index}-${item.CMPNM || "food"}`,
+          }));
+
+          state.totalRows = Number(result?.totalRows || 0);
+          state.currentPage = Number(result?.currentPage || page);
+          state.totalPages = Math.max(
+            1,
+            Math.ceil(state.totalRows / state.perPage),
+          );
+
+          state.sigunOptions = new Set([
+            ...Array.from(state.sigunOptions),
+            ...state.items
+              .map((item) => normalizeText(item.SIGUN))
+              .filter(Boolean),
+          ]);
+
+          updateSigunOptions();
+          applyClientFilter();
+
+          setStatus(
+            `총 ${state.totalRows.toLocaleString()}건 중 ${state.currentPage}페이지를 불러왔습니다.`,
+          );
+        } catch (error) {
+          console.error("API 요청 실패:", error);
+          renderError(
+            "데이터를 불러오지 못했습니다. 인증키, CORS, 요청 파라미터를 확인해주세요.",
+          );
+          setStatus(
+            "API 요청에 실패했습니다. 인증키와 요청 주소를 확인해주세요.",
+            true,
+          );
+        }
+      }
+
+      function updateSigunOptions() {
+        const currentValue = $sigunFilter.value;
+        const options = Array.from(state.sigunOptions).sort((a, b) =>
+          a.localeCompare(b, "ko"),
+        );
+
+        $sigunFilter.innerHTML =
+          '<option value="">전체 시군</option>' +
+          options
+            .map(
+              (sigun) =>
+                `<option value="${escapeHtml(sigun)}">${escapeHtml(sigun)}</option>`,
+            )
+            .join("");
+
+        if (options.includes(currentValue)) {
+          $sigunFilter.value = currentValue;
+        }
+      }
+
+      function applyClientFilter() {
+        const sigun = normalizeText(state.sigun);
+        state.filteredItems = state.items.filter((item) => {
+          if (!sigun) return true;
+          return normalizeText(item.SIGUN) === sigun;
+        });
+
+        renderList();
+        updatePaginationUI();
+
+        if (state.filteredItems.length > 0) {
+          selectFood(state.filteredItems[0]._id);
+        } else {
+          state.selectedId = null;
+          renderEmptyDetail();
+          renderMapFallback();
+        }
+      }
+
+      function renderLoading() {
+        $listWrap.innerHTML =
+          '<div class="loading">데이터를 불러오는 중입니다...</div>';
+      }
+
+      function renderError(message) {
+        $listWrap.innerHTML = `<div class="error-box">${escapeHtml(message)}</div>`;
+        $resultSummary.textContent = "검색 결과를 불러오지 못했습니다.";
+        $pageSummary.textContent = "0 / 0 페이지";
+        $paginationText.textContent = "0 / 0";
+      }
+
+      function renderList() {
+        if (!state.filteredItems.length) {
+          $listWrap.innerHTML =
+            '<div class="detail-empty">조건에 맞는 음식업소가 없습니다.</div>';
+          $resultSummary.textContent = `현재 페이지 결과 0건`;
+          return;
+        }
+
+        $listWrap.innerHTML = state.filteredItems
+          .map((item) => {
+            const name = normalizeText(item.CMPNM) || "상호 정보 없음";
+            const sigun = normalizeText(item.SIGUN) || "시군 정보 없음";
+            const type = normalizeText(item.SE) || "구분 정보 없음";
+            const menu =
+              normalizeText(item.MNMNU) ||
+              normalizeText(item.MENU) ||
+              "메뉴 정보 없음";
+            const address = normalizeText(item.ADRES) || "주소 정보 없음";
+
+            return `
+            <article class="card ${state.selectedId === item._id ? "active" : ""}" data-id="${escapeHtml(item._id)}">
+              <div class="badge-row">
+                <span class="badge badge-blue">${escapeHtml(sigun)}</span>
+                <span class="badge badge-amber">${escapeHtml(type)}</span>
+              </div>
+              <h3>${escapeHtml(name)}</h3>
+              <p><strong>대표메뉴:</strong> ${escapeHtml(menu)}</p>
+              <p><strong>주소:</strong> ${escapeHtml(address)}</p>
+            </article>
+          `;
+          })
+          .join("");
+
+        $resultSummary.textContent = `현재 페이지 결과 ${state.filteredItems.length}건 / 전체 ${state.totalRows.toLocaleString()}건`;
+
+        Array.from($listWrap.querySelectorAll(".card")).forEach((card) => {
+          card.addEventListener("click", () => {
+            selectFood(card.dataset.id);
+          });
+        });
+      }
+
+      function renderEmptyDetail() {
+        $detailBody.innerHTML =
+          '<div class="detail-empty">업소를 선택하면 상세 정보가 여기에 표시됩니다.</div>';
+      }
+
+      function renderMapFallback() {
+        $map.innerHTML =
+          '<div class="detail-empty" style="height:100%; border-radius:0; border:0;">지도 정보를 표시할 수 없습니다.</div>';
+      }
+
+      function renderMap(item) {
+        const lat = Number(item.LA);
+        const lng = Number(item.LO);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          renderMapFallback();
+          return;
+        }
+
+        const bbox = `${lng - 0.01}%2C${lat - 0.01}%2C${lng + 0.01}%2C${lat + 0.01}`;
+        const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
+
+        $map.innerHTML = `
+          <iframe
+            title="업소 위치 지도"
+            src="${src}"
+            width="100%"
+            height="100%"
+            style="border:0; display:block;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        `;
+      }
+
+      function selectFood(id) {
+        state.selectedId = id;
+        const item = state.filteredItems.find((food) => food._id === id);
+        if (!item) return;
+
+        renderList();
+        renderDetail(item);
+        renderMap(item);
+      }
+
+      function renderDetail(item) {
+        const name = normalizeText(item.CMPNM) || "상호 정보 없음";
+        const sigun = normalizeText(item.SIGUN) || "시군 정보 없음";
+        const type = normalizeText(item.SE) || "구분 정보 없음";
+        const address = normalizeText(item.ADRES) || "주소 정보 없음";
+        const tel = normalizeText(item.TELNO) || "전화번호 정보 없음";
+        const time = normalizeText(item.TIME) || "영업시간 정보 없음";
+        const lat = normalizeText(item.LA) || "위도 정보 없음";
+        const lng = normalizeText(item.LO) || "경도 정보 없음";
+        const mainMenu = normalizeText(item.MNMNU) || "대표메뉴 정보 없음";
+        const intro = normalizeText(item.DC) || "소개 정보가 없습니다.";
+        const url = normalizeText(item._URL);
+        const menus = splitMenus(item.MENU || item.MNMNU);
+
+        $detailBody.innerHTML = `
+          <div class="detail-top">
+            <div class="detail-title">
+              <div class="badge-row">
+                <span class="badge badge-blue">${escapeHtml(sigun)}</span>
+                <span class="badge badge-amber">${escapeHtml(type)}</span>
+              </div>
+              <h3>${escapeHtml(name)}</h3>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>기본 정보</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>주소</strong>
+                <span>${escapeHtml(address)}</span>
+              </div>
+              <div class="info-item">
+                <strong>전화번호</strong>
+                <span>${escapeHtml(tel)}</span>
+              </div>
+              <div class="info-item">
+                <strong>영업시간</strong>
+                <span>${escapeHtml(time)}</span>
+              </div>
+              <div class="info-item">
+                <strong>대표메뉴</strong>
+                <span>${escapeHtml(mainMenu)}</span>
+              </div>
+              <div class="info-item">
+                <strong>위도</strong>
+                <span>${escapeHtml(lat)}</span>
+              </div>
+              <div class="info-item">
+                <strong>경도</strong>
+                <span>${escapeHtml(lng)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>업소 소개</h4>
+            <p>${escapeHtml(intro)}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>메뉴</h4>
+            ${
+              menus.length
+                ? `<ul class="menu-list">${menus.map((menu) => `<li>${escapeHtml(menu)}</li>`).join("")}</ul>`
+                : `<p>등록된 메뉴 정보가 없습니다.</p>`
+            }
+          </div>
+
+          <div class="detail-section">
+            <h4>관련 링크</h4>
+            ${
+              url
+                ? `<p><a class="inline-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">소개 페이지 바로가기</a></p>`
+                : `<p>등록된 관련 링크가 없습니다.</p>`
+            }
+          </div>
+        `;
+      }
+
+      function updatePaginationUI() {
+        $pageSummary.textContent = `${state.currentPage} / ${state.totalPages} 페이지`;
+        $paginationText.textContent = `${state.currentPage} / ${state.totalPages}`;
+        $prevBtn.disabled = state.currentPage <= 1;
+        $nextBtn.disabled = state.currentPage >= state.totalPages;
+      }
+
+      function handleSearch() {
+        state.keyword = normalizeText($keyword.value);
+        state.sigun = normalizeText($sigunFilter.value);
+        fetchFoodList(1);
+      }
+
+      function handleReset() {
+        $keyword.value = "";
+        $sigunFilter.value = "";
+        state.keyword = "";
+        state.sigun = "";
+        state.currentPage = 1;
+        state.totalRows = 0;
+        state.totalPages = 1;
+        state.items = [];
+        state.filteredItems = [];
+        state.selectedId = null;
+        state.sigunOptions = new Set();
+        $listWrap.innerHTML =
+          '<div class="detail-empty">왼쪽 목록에 음식업소가 표시됩니다.</div>';
+        renderEmptyDetail();
+        renderMapFallback();
+        $resultSummary.textContent = "검색 결과가 없습니다.";
+        $pageSummary.textContent = "0 / 0 페이지";
+        $paginationText.textContent = "1 / 1";
+        setStatus("검색 조건이 초기화되었습니다.");
+      }
+
+      $searchBtn.addEventListener("click", handleSearch);
+      $resetBtn.addEventListener("click", handleReset);
+
+      $keyword.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") handleSearch();
+      });
+
+      $sigunFilter.addEventListener("change", () => {
+        state.sigun = normalizeText($sigunFilter.value);
+        applyClientFilter();
+      });
+
+      $prevBtn.addEventListener("click", () => {
+        if (state.currentPage > 1) {
+          fetchFoodList(state.currentPage - 1);
+        }
+      });
+
+      $nextBtn.addEventListener("click", () => {
+        if (state.currentPage < state.totalPages) {
+          fetchFoodList(state.currentPage + 1);
+        }
+      });
+
+      renderMapFallback();
+      updatePaginationUI();
+    </script>
+  </body>
+</html>
