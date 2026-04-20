@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>부산 맛집 서비스</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:
+          "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        background: #f3f3f3;
+        color: #222;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 480px;
+        min-height: 100vh;
+        background: #f6f6f6;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .screen {
+        display: none;
+        min-height: 100vh;
+        padding: 18px 16px 92px;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .topbar-left h1 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.25;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .topbar-left p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #777;
+        font-weight: 600;
+      }
+
+      .icon-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 2px;
+      }
+
+      .icon-btn {
+        width: 34px;
+        height: 34px;
+        border: 0;
+        background: transparent;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #111;
+        transition: background 0.2s ease;
+      }
+
+      .icon-btn:hover {
+        background: #ececec;
+      }
+
+      .search-wrap {
+        position: relative;
+        margin-bottom: 18px;
+      }
+
+      .search-wrap svg {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #111;
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        height: 52px;
+        border: 1px solid #e8e8e8;
+        background: #fff;
+        border-radius: 999px;
+        outline: none;
+        padding: 0 16px 0 52px;
+        font-size: 15px;
+        color: #222;
+      }
+
+      .search-input::placeholder {
+        color: #c9c9c9;
+      }
+
+      .restaurant-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .restaurant-card {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        padding: 20px 14px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .restaurant-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      }
+
+      .card-main {
+        min-width: 0;
+      }
+
+      .card-title {
+        margin: 0 0 12px;
+        font-size: 19px;
+        line-height: 1.35;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        word-break: keep-all;
+      }
+
+      .card-line {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.55;
+        color: #444;
+        word-break: keep-all;
+      }
+
+      .card-line strong {
+        color: #202020;
+        font-weight: 800;
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        align-self: center;
+      }
+
+      .mini-btn {
+        width: 34px;
+        height: 34px;
+        border: 1px solid #e3e3e3;
+        background: #fff;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .mini-btn:hover {
+        background: #f7f7f7;
+        border-color: #d7d7d7;
+      }
+
+      .mini-btn.favorited {
+        background: #111;
+        border-color: #111;
+        color: #fff;
+      }
+
+      .bottom-nav {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 0;
+        width: 100%;
+        max-width: 480px;
+        background: #f6f6f6;
+        padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        z-index: 40;
+      }
+
+      .tab-btn {
+        height: 46px;
+        border-radius: 10px;
+        border: 1px solid #dfdfdf;
+        background: #fff;
+        color: #222;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab-btn.active {
+        background: #2d2d2d;
+        color: #fff;
+        border-color: #2d2d2d;
+      }
+
+      .hero-image {
+        width: 100%;
+        height: 228px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #ddd;
+        margin-bottom: 18px;
+      }
+
+      .hero-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .detail-section {
+        margin-bottom: 14px;
+      }
+
+      .section-badge {
+        display: inline-block;
+        background: #2c2c2c;
+        color: #fff;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+
+      .detail-text {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.65;
+        color: #444;
+        word-break: keep-all;
+      }
+
+      .map-box {
+        width: 100%;
+        height: 220px;
+        border-radius: 0;
+        overflow: hidden;
+        margin-top: 10px;
+        background: #e5e5e5;
+        border: 1px solid #e1e1e1;
+      }
+
+      .detail-top-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .back-btn {
+        border: 0;
+        background: transparent;
+        font-size: 15px;
+        font-weight: 800;
+        color: #111;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .favorite-pill {
+        border: 1px solid #ddd;
+        background: #fff;
+        color: #111;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .favorite-pill.active {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+      }
+
+      .loading,
+      .empty,
+      .error-box {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        padding: 18px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #555;
+      }
+
+      .error-box {
+        color: #b42318;
+        background: #fff7f6;
+        border-color: #f3d2ce;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <section id="listScreen" class="screen active">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1>부산 맛집 서비스</h1>
+            <p id="totalCountText">전체 0건</p>
+          </div>
+          <div class="icon-actions">
+            <button
+              id="refreshBtn"
+              class="icon-btn"
+              type="button"
+              aria-label="새로고침"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M20 4V10H14"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M20 10C18.9826 7.16229 16.1343 5.14291 13 5.00384C9.86566 4.86477 6.84966 6.63461 5.58579 9.50584C4.32191 12.3771 5.06979 15.7364 7.48645 17.8262C9.90311 19.916 13.3344 20.3635 16.2 18.96"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <button
+              id="headerFavoriteBtn"
+              class="icon-btn"
+              type="button"
+              aria-label="즐겨찾기 보기"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12.62 20.55C12.28 20.76 11.85 20.76 11.5 20.55C8.74 18.89 3 15.21 3 9.95C3 6.98 5.42 4.6 8.4 4.6C10.18 4.6 11.46 5.46 12.06 6.33C12.66 5.46 13.94 4.6 15.72 4.6C18.7 4.6 21.12 6.98 21.12 9.95C21.12 15.21 15.38 18.89 12.62 20.55Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+              stroke="currentColor"
+              stroke-width="2"
+            ></circle>
+            <path
+              d="M20 20L17 17"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            ></path>
+          </svg>
+          <input
+            id="searchInput"
+            class="search-input"
+            type="text"
+            placeholder="가게명/주소/메뉴로 검색"
+          />
+        </div>
+
+        <div id="listState"></div>
+        <div id="restaurantList" class="restaurant-list"></div>
+      </section>
+
+      <section id="detailScreen" class="screen">
+        <div class="detail-top-actions">
+          <button id="backBtn" class="back-btn" type="button">
+            ← 목록으로
+          </button>
+          <button id="detailFavoriteBtn" class="favorite-pill" type="button">
+            ♡ 즐겨찾기
+          </button>
+        </div>
+
+        <div class="hero-image">
+          <img id="detailImage" src="" alt="맛집 이미지" />
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">상호명</div>
+          <p id="detailName" class="detail-text"></p>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">주소</div>
+          <p id="detailAddress" class="detail-text"></p>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">소개</div>
+          <p id="detailDesc" class="detail-text"></p>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">대표메뉴</div>
+          <p id="detailMenu" class="detail-text"></p>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">연락처</div>
+          <p id="detailPhone" class="detail-text"></p>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-badge">운영 및 시간</div>
+          <p id="detailHours" class="detail-text"></p>
+        </div>
+
+        <div id="map" class="map-box"></div>
+      </section>
+
+      <nav class="bottom-nav">
+        <button id="tabAll" class="tab-btn active" type="button">맛집</button>
+        <button id="tabFavorite" class="tab-btn" type="button">즐겨찾기</button>
+      </nav>
+    </div>
+
+    <!-- 카카오맵 API 키를 아래 YOUR_KAKAO_JAVASCRIPT_KEY 로 교체하세요 -->
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3ca8f8ca6e23307fccc79051a54d9f4a&autoload=false"></script>
+
+    <script>
+      /*
+      ==========================================
+      설정값
+      ==========================================
+      1) YOUR_PUBLIC_DATA_SERVICE_KEY 를 공공데이터포털 일반 인증키(Decoding)로 변경
+      2) YOUR_KAKAO_JAVASCRIPT_KEY 를 카카오 JavaScript 키로 변경
+    */
+      const SERVICE_KEY =
+        "U3rjn1OQzoe833jk5RJokTl1sVFUmIQp7dGTZl0tcvNU7p2blLzjccSSgrAHQgyLYlBIm7Qt0wOFwQRvvG7h8Q%3D%3D";
+      const API_URL = "https://apis.data.go.kr/6260000/FoodService/getFoodKr";
+      const PAGE_SIZE = 200;
+      const FALLBACK_IMAGE =
+        "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80";
+
+      const state = {
+        restaurants: [],
+        filteredRestaurants: [],
+        favorites: new Set(
+          JSON.parse(localStorage.getItem("busan-food-favorites") || "[]"),
+        ),
+        currentTab: "all",
+        currentKeyword: "",
+        selected: null,
+        map: null,
+        marker: null,
+      };
+
+      const els = {
+        listScreen: document.getElementById("listScreen"),
+        detailScreen: document.getElementById("detailScreen"),
+        listState: document.getElementById("listState"),
+        restaurantList: document.getElementById("restaurantList"),
+        searchInput: document.getElementById("searchInput"),
+        totalCountText: document.getElementById("totalCountText"),
+        refreshBtn: document.getElementById("refreshBtn"),
+        headerFavoriteBtn: document.getElementById("headerFavoriteBtn"),
+        tabAll: document.getElementById("tabAll"),
+        tabFavorite: document.getElementById("tabFavorite"),
+        backBtn: document.getElementById("backBtn"),
+        detailFavoriteBtn: document.getElementById("detailFavoriteBtn"),
+        detailImage: document.getElementById("detailImage"),
+        detailName: document.getElementById("detailName"),
+        detailAddress: document.getElementById("detailAddress"),
+        detailDesc: document.getElementById("detailDesc"),
+        detailMenu: document.getElementById("detailMenu"),
+        detailPhone: document.getElementById("detailPhone"),
+        detailHours: document.getElementById("detailHours"),
+      };
+
+      function saveFavorites() {
+        localStorage.setItem(
+          "busan-food-favorites",
+          JSON.stringify([...state.favorites]),
+        );
+      }
+
+      function normalizeImage(url) {
+        if (!url) return FALLBACK_IMAGE;
+        if (url.startsWith("http")) return url;
+        if (url.startsWith("//")) return "https:" + url;
+        return "https://www.visitbusan.net" + url;
+      }
+
+      function normalizeRestaurant(item) {
+        return {
+          id: String(item.UC_SEQ || ""),
+          name: item.MAIN_TITLE || "상호명 없음",
+          district: item.GUGUN_NM || "",
+          place: item.PLACE || "",
+          title: item.TITLE || "",
+          subtitle: item.SUBTITLE || "",
+          address: [item.ADDR1, item.ADDR2].filter(Boolean).join(" "),
+          phone: item.CNTCT_TEL || "정보 없음",
+          hours: item.USAGE_DAY_WEEK_AND_TIME || "정보 없음",
+          menu: item.RPRSNTV_MENU || "정보 없음",
+          description:
+            item.ITEMCNTNTS || item.TITLE || "상세 소개 정보가 없습니다.",
+          latitude: Number(item.LAT) || 35.1796,
+          longitude: Number(item.LNG) || 129.0756,
+          image: normalizeImage(item.MAIN_IMG_NORMAL || item.MAIN_IMG_THUMB),
+          thumb: normalizeImage(item.MAIN_IMG_THUMB || item.MAIN_IMG_NORMAL),
+          raw: item,
+        };
+      }
+
+      function setLoading(message) {
+        els.listState.innerHTML = '<div class="loading">' + message + "</div>";
+        els.restaurantList.innerHTML = "";
+      }
+
+      function setError(message) {
+        els.listState.innerHTML =
+          '<div class="error-box">' + message + "</div>";
+        els.restaurantList.innerHTML = "";
+        els.totalCountText.textContent = "전체 0건";
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function updateTabs() {
+        els.tabAll.classList.toggle("active", state.currentTab === "all");
+        els.tabFavorite.classList.toggle(
+          "active",
+          state.currentTab === "favorite",
+        );
+      }
+
+      function getVisibleRestaurants() {
+        const keyword = state.currentKeyword.trim().toLowerCase();
+        let list = [...state.restaurants];
+
+        if (state.currentTab === "favorite") {
+          list = list.filter((item) => state.favorites.has(item.id));
+        }
+
+        if (keyword) {
+          list = list.filter((item) => {
+            const haystack = [
+              item.name,
+              item.address,
+              item.menu,
+              item.description,
+              item.place,
+              item.district,
+            ]
+              .join(" ")
+              .toLowerCase();
+            return haystack.includes(keyword);
+          });
+        }
+
+        return list;
+      }
+
+      function renderList() {
+        const list = getVisibleRestaurants();
+        state.filteredRestaurants = list;
+        els.totalCountText.textContent = "전체 " + list.length + "건";
+
+        if (!state.restaurants.length) {
+          els.listState.innerHTML =
+            '<div class="empty">데이터가 없습니다.</div>';
+          els.restaurantList.innerHTML = "";
+          return;
+        }
+
+        if (!list.length) {
+          els.listState.innerHTML =
+            '<div class="empty">검색 결과가 없습니다.</div>';
+          els.restaurantList.innerHTML = "";
+          return;
+        }
+
+        els.listState.innerHTML = "";
+
+        els.restaurantList.innerHTML = list
+          .map((item) => {
+            const isFavorite = state.favorites.has(item.id);
+            return `
+          <article class="restaurant-card" data-id="${escapeHtml(item.id)}">
+            <div class="card-main">
+              <h2 class="card-title">${escapeHtml(item.name)}</h2>
+              <p class="card-line"><strong>주소 :</strong> ${escapeHtml(item.address || "정보 없음")}</p>
+              <p class="card-line"><strong>메뉴 :</strong> ${escapeHtml(item.menu || "정보 없음")}</p>
+            </div>
+            <div class="card-actions">
+              <button class="mini-btn detail-open" type="button" data-id="${escapeHtml(item.id)}" aria-label="상세보기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                  <path d="M20 20L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </button>
+              <button class="mini-btn favorite-toggle ${isFavorite ? "favorited" : ""}" type="button" data-id="${escapeHtml(item.id)}" aria-label="즐겨찾기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12.62 20.55C12.28 20.76 11.85 20.76 11.5 20.55C8.74 18.89 3 15.21 3 9.95C3 6.98 5.42 4.6 8.4 4.6C10.18 4.6 11.46 5.46 12.06 6.33C12.66 5.46 13.94 4.6 15.72 4.6C18.7 4.6 21.12 6.98 21.12 9.95C21.12 15.21 15.38 18.89 12.62 20.55Z" stroke="currentColor" stroke-width="2" fill="none"></path>
+                </svg>
+              </button>
+            </div>
+          </article>
+        `;
+          })
+          .join("");
+      }
+
+      function toggleFavorite(id) {
+        if (state.favorites.has(id)) {
+          state.favorites.delete(id);
+        } else {
+          state.favorites.add(id);
+        }
+        saveFavorites();
+        renderList();
+        syncDetailFavoriteButton();
+      }
+
+      function syncDetailFavoriteButton() {
+        if (!state.selected) return;
+        const active = state.favorites.has(state.selected.id);
+        els.detailFavoriteBtn.classList.toggle("active", active);
+        els.detailFavoriteBtn.textContent = active
+          ? "♥ 즐겨찾기 해제"
+          : "♡ 즐겨찾기";
+      }
+
+      function showScreen(name) {
+        els.listScreen.classList.toggle("active", name === "list");
+        els.detailScreen.classList.toggle("active", name === "detail");
+      }
+
+      function openDetail(id) {
+        const item = state.restaurants.find((v) => v.id === id);
+        if (!item) return;
+        state.selected = item;
+
+        els.detailImage.src = item.image;
+        els.detailImage.alt = item.name;
+        els.detailName.textContent = item.name;
+        els.detailAddress.textContent = item.address || "정보 없음";
+        els.detailDesc.textContent = item.description || "정보 없음";
+        els.detailMenu.textContent = item.menu || "정보 없음";
+        els.detailPhone.textContent = item.phone || "정보 없음";
+        els.detailHours.textContent = item.hours || "정보 없음";
+        syncDetailFavoriteButton();
+        showScreen("detail");
+        initMap(item);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function initMap(item) {
+        if (typeof kakao === "undefined" || !kakao.maps) {
+          document.getElementById("map").innerHTML =
+            '<div style="padding:20px;font-size:14px;line-height:1.6;color:#666;">카카오맵 키가 설정되지 않았거나 로딩에 실패했습니다.</div>';
+          return;
+        }
+
+        kakao.maps.load(function () {
+          const mapContainer = document.getElementById("map");
+          const center = new kakao.maps.LatLng(item.latitude, item.longitude);
+
+          state.map = new kakao.maps.Map(mapContainer, {
+            center,
+            level: 3,
+          });
+
+          state.marker = new kakao.maps.Marker({
+            position: center,
+          });
+          state.marker.setMap(state.map);
+        });
+      }
+
+      async function fetchRestaurants() {
+        if (!SERVICE_KEY || SERVICE_KEY === "YOUR_PUBLIC_DATA_SERVICE_KEY") {
+          setError(
+            "공공데이터포털 인증키를 먼저 입력해주세요. 코드 상단의 SERVICE_KEY 값을 교체하면 됩니다.",
+          );
+          return;
+        }
+
+        setLoading("부산 맛집 정보를 불러오는 중입니다...");
+
+        try {
+          const params = new URLSearchParams({
+            serviceKey: SERVICE_KEY,
+            pageNo: "1",
+            numOfRows: String(PAGE_SIZE),
+            resultType: "json",
+          });
+
+          const response = await fetch(API_URL + "?" + params.toString());
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+
+          const data = await response.json();
+          const items = data?.getFoodKr?.item || [];
+          state.restaurants = items.map(normalizeRestaurant);
+          renderList();
+        } catch (error) {
+          console.error(error);
+          setError(
+            "API 호출에 실패했습니다. 인증키, CORS 환경, 또는 요청 주소를 확인해주세요. 로컬 파일 대신 라이브 서버 환경에서 실행하는 것도 권장합니다.",
+          );
+        }
+      }
+
+      els.searchInput.addEventListener("input", function (e) {
+        state.currentKeyword = e.target.value;
+        renderList();
+      });
+
+      els.refreshBtn.addEventListener("click", fetchRestaurants);
+
+      els.headerFavoriteBtn.addEventListener("click", function () {
+        state.currentTab = "favorite";
+        updateTabs();
+        renderList();
+        showScreen("list");
+      });
+
+      els.tabAll.addEventListener("click", function () {
+        state.currentTab = "all";
+        updateTabs();
+        renderList();
+        showScreen("list");
+      });
+
+      els.tabFavorite.addEventListener("click", function () {
+        state.currentTab = "favorite";
+        updateTabs();
+        renderList();
+        showScreen("list");
+      });
+
+      els.backBtn.addEventListener("click", function () {
+        showScreen("list");
+      });
+
+      els.detailFavoriteBtn.addEventListener("click", function () {
+        if (!state.selected) return;
+        toggleFavorite(state.selected.id);
+      });
+
+      els.restaurantList.addEventListener("click", function (e) {
+        const favoriteBtn = e.target.closest(".favorite-toggle");
+        const detailBtn = e.target.closest(".detail-open");
+        const card = e.target.closest(".restaurant-card");
+
+        if (favoriteBtn) {
+          e.stopPropagation();
+          toggleFavorite(favoriteBtn.dataset.id);
+          return;
+        }
+
+        if (detailBtn) {
+          e.stopPropagation();
+          openDetail(detailBtn.dataset.id);
+          return;
+        }
+
+        if (card) {
+          openDetail(card.dataset.id);
+        }
+      });
+
+      updateTabs();
+      fetchRestaurants();
+    </script>
+  </body>
+</html>
